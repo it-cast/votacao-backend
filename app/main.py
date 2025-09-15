@@ -1,18 +1,40 @@
 # app/main.py
 from fastapi import FastAPI
+# 1. Importe o CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.db.base import Base
 from app.db.database import engine
-from app.api.v1 import user_router, auth_router
+from app.api.v1 import auth_router, camara_router, usuario_router, camara_usuario_router
 
-# Esta linha cria a tabela "users" no seu banco de dados se ela não existir
-Base.metadata.create_all(bind=engine)
+# Esta linha cria as tabelas no seu banco de dados se elas não existirem
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Minha API",
-    description="Template com autenticação JWT.",
+    title="API de Votação",
+    description="API para o sistema de votação.",
     version="1.0.0"
 )
 
+# 2. Defina as origens permitidas (de onde seu front-end fará as requisições)
+origins = [
+    "http://localhost",
+    "http://localhost:4200", # Endereço padrão do Angular em desenvolvimento
+    "http://localhost:8080",
+]
+
+# 3. Adicione o middleware de CORS à sua aplicação
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Lista de origens que podem fazer requisições
+    allow_credentials=True, # Permite cookies (importante para autenticação)
+    allow_methods=["*"],    # Permite todos os métodos (GET, POST, etc.)
+    allow_headers=["*"],    # Permite todos os cabeçalhos
+)
+
+
 # Inclui os roteadores da API
 app.include_router(auth_router.router, prefix="/api/v1")
-app.include_router(user_router.router, prefix="/api/v1")
+app.include_router(usuario_router.router, prefix="/api/v1")
+app.include_router(camara_router.router, prefix="/api/v1")
+app.include_router(camara_usuario_router.router, prefix="/api/v1")

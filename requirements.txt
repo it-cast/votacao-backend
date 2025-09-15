@@ -15,7 +15,7 @@ sqlalchemy
 psycopg2-binary
 
 # Para MySQL
-mysqlclient
+# mysqlclient
 PyMySQL # Alternativa ao mysqlclient, caso encontre problemas na instalação.
 
 

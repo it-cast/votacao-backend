@@ -1,0 +1,55 @@
+# app/schemas/camara_usuario_schema.py
+from pydantic import BaseModel
+from typing import Optional, List
+
+from app.schemas.usuario_schema import UsuarioPublic, UsuarioSimple, UsuarioCreate
+from app.schemas.camara_schema import Camara
+
+# Apenas os campos que podem ser atualizados, sem validação de senha
+class UsuarioInUpdate(BaseModel):
+    id: int
+    nome: str
+    email: str
+    ativo: bool
+    is_superuser: bool
+
+
+class CamaraUsuarioUpdatePayload(BaseModel):
+    ativo: bool
+    camara_id: int
+    papel: int
+    permissao: List[str]
+    usuario: UsuarioInUpdate
+
+class CamaraUsuarioBase(BaseModel):
+    usuario_id: int
+    camara_id: int
+    papel: int
+    permissao: str
+
+class CamaraUsuarioCreate(BaseModel):
+    camara_id: int
+    papel: int
+    permissao: List[str]
+    ativo: Optional[bool] = True
+    usuario: Optional[UsuarioCreate] = None
+    usuario_id: Optional[int] = None
+
+# O schema para atualização deve ter todos os campos como opcionais,
+# pois ele é usado para atualizações parciais.
+class CamaraUsuarioUpdate(BaseModel):
+    papel: Optional[int] = None
+    ativo: Optional[bool] = None
+    # Removidos os campos obrigatórios que estavam a causar o erro
+
+class CamaraUsuarioPublic(CamaraUsuarioBase):
+    id: int
+    ativo: bool
+    usuario: UsuarioSimple
+    camara: Camara
+    class Config:
+        from_attributes = True
+
+class PaginatedCamaraUsuarioResponse(BaseModel):
+    items: List[CamaraUsuarioPublic]
+    total: int
