@@ -45,6 +45,7 @@ def read_associations_by_camara(
     camara_id: int,
     skip: int = 0,
     limit: int = 100,
+    filtro: str = None,
     current_user: Usuario = Depends(get_current_user)
 ):
     """
@@ -52,8 +53,8 @@ def read_associations_by_camara(
     Requer autenticação.
     """
     service = CamaraUsuarioService(db)
-    usuarios = service.get_associations_by_camara(camara_id=camara_id, skip=skip, limit=limit)
-    total = service.get_total_associations_by_camara(camara_id=camara_id)
+    usuarios = service.get_associations_by_camara(camara_id=camara_id, skip=skip, limit=limit, filtro=filtro)
+    total = service.get_total_associations_by_camara(camara_id=camara_id, filtro=filtro)
     return {"items": usuarios, "total": total}
 
 @router.put("/{id}", response_model=CamaraUsuarioPublic)

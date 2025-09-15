@@ -27,18 +27,18 @@ class CamaraUsuarioService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associação não encontrada")
         return association
 
-    def get_associations_by_camara(self, camara_id: int, skip: int, limit: int):
+    def get_associations_by_camara(self, camara_id: int, skip: int, limit: int, filtro: Optional[str] = None):
         cam = self.camara_repo.get(self.db, camara_id=camara_id)
         if not cam:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Câmara não encontrada")
         
         return self.repository.get_all_by_camara_id(
-            self.db, camara_id=camara_id, skip=skip, limit=limit
+            self.db, camara_id=camara_id, skip=skip, limit=limit, filtro= filtro
         )
 
-    def get_total_associations_by_camara(self, camara_id: int) -> int:
+    def get_total_associations_by_camara(self, camara_id: int, filtro: Optional[str] = None) -> int:
         """Retorna o número total de associações para uma câmara específica."""
-        return self.repository.count_by_camara_id(self.db, camara_id=camara_id)
+        return self.repository.count_by_camara_id(self.db, camara_id=camara_id, filtro=filtro)
 
     def create_association(self, association_in: CamaraUsuarioCreate):
         if not association_in.usuario:
@@ -50,11 +50,6 @@ class CamaraUsuarioService:
         usuario_data = association_in.usuario
         usuario_id = usuario_data.id
 
-        # --- PONTO DE DEBUG 1: VER O QUE CHEGA DO FRONTEND ---
-        print("\n--- DEBUG: DADOS RECEBIDOS PELO SERVIÇO ---")
-        print(f"Tipo de association_in.permissao: {type(association_in.permissao)}")
-        print(f"Valor de association_in.permissao: {association_in.permissao}")
-        print("-------------------------------------------\n")
         if usuario_id:
             user = self.usuario_repo.get_by_id(id=usuario_id)
             if not user:
@@ -97,12 +92,6 @@ class CamaraUsuarioService:
         }
         
         final_obj_to_create = CamaraUsuarioBase(**create_data_dict)
-
-        # --- PONTO DE DEBUG 2: VER O OBJETO FINAL ANTES DE ENVIAR PARA O REPOSITÓRIO ---
-        print("\n--- DEBUG: DADOS A SEREM ENVIADOS PARA O REPOSITÓRIO ---")
-        print(f"Tipo de final_obj_to_create.permissao: {type(final_obj_to_create.permissao)}")
-        print(f"Valor de final_obj_to_create.permissao: {final_obj_to_create.permissao}")
-        print("------------------------------------------------------\n")
         return self.repository.create(self.db, obj_in=final_obj_to_create)
 
     def update_association(self, id: int, association_in: CamaraUsuarioUpdatePayload):

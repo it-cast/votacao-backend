@@ -2,8 +2,10 @@
 from sqlalchemy.orm import Session
 from app.models.camara_usuario_model import CamaraUsuario
 # ATUALIZADO: Importe CamaraUsuarioBase em vez de CamaraUsuarioCreate
+from app.models.usuario_model import Usuario
 from app.schemas.camara_usuario_schema import CamaraUsuarioBase, CamaraUsuarioUpdate
 from typing import List, Optional
+from sqlalchemy import or_
 
 class CamaraUsuarioRepository:
     def get(self, db: Session, id: int) -> Optional[CamaraUsuario]:
@@ -15,8 +17,52 @@ class CamaraUsuarioRepository:
             CamaraUsuario.camara_id == camara_id
         ).first()
 
-    def get_all_by_camara_id(self, db: Session, *, camara_id: int, skip: int = 0, limit: int = 100) -> List[CamaraUsuario]:
-        return db.query(CamaraUsuario).filter(CamaraUsuario.camara_id == camara_id, CamaraUsuario.excluido == False).offset(skip).limit(limit).all()
+    def get_all_by_camara_id(self, db: Session, *, camara_id: int, skip: int = 0, limit: int = 100, filtro: Optional[str] = None) -> List[CamaraUsuario]:
+        """
+        Busca uma lista de associações de uma câmara, com JOIN para permitir
+        filtrar pelo nome ou e-mail do usuário.
+        """
+        query = db.query(CamaraUsuario).filter(
+            CamaraUsuario.camara_id == camara_id, 
+            CamaraUsuario.excluido == False
+        )
+
+        if filtro:
+            # Adiciona o JOIN com a tabela Usuario
+            query = query.join(Usuario, CamaraUsuario.usuario_id == Usuario.id)
+            # Adiciona o filtro para nome ou e-mail
+            query = query.filter(
+                or_(
+                    Usuario.nome.ilike(f"%{filtro}%"),
+                    Usuario.email.ilike(f"%{filtro}%")
+                )
+            )
+
+        return query.offset(skip).limit(limit).all()
+
+    # --- 3. FUNÇÃO DE CONTAGEM ATUALIZADA ---
+    def count_by_camara_id(self, db: Session, *, camara_id: int, filtro: Optional[str] = None) -> int:
+        """
+        Conta o número total de associações para uma câmara específica,
+        aplicando o filtro de nome ou e-mail se fornecido.
+        """
+        query = db.query(CamaraUsuario).filter(
+            CamaraUsuario.camara_id == camara_id, 
+            CamaraUsuario.excluido == False
+        )
+
+        if filtro:
+            # Adiciona o JOIN com a tabela Usuario
+            query = query.join(Usuario, CamaraUsuario.usuario_id == Usuario.id)
+            # Adiciona o filtro para nome ou e-mail
+            query = query.filter(
+                or_(
+                    Usuario.nome.ilike(f"%{filtro}%"),
+                    Usuario.email.ilike(f"%{filtro}%")
+                )
+            )
+            
+        return query.count()
 
     # --- CORREÇÃO APLICADA AQUI ---
     # A função agora espera `CamaraUsuarioBase`, que tem `permissao` como uma string.
@@ -55,8 +101,6 @@ class CamaraUsuarioRepository:
         db.refresh(db_obj)
         return db_obj
 
-    def count_by_camara_id(self, db: Session, *, camara_id: int) -> int:
-        """Conta o número total de associações para uma câmara específica."""
-        return db.query(CamaraUsuario).filter(CamaraUsuario.camara_id == camara_id, CamaraUsuario.excluido == False).count()
+   
 
 camara_usuario_repository = CamaraUsuarioRepository()
