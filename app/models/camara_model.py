@@ -29,3 +29,9 @@ class Camara(Base):
         back_populates="camara", 
         cascade="all, delete-orphan"
     )
+
+    mandatos = relationship(
+        "Mandato",
+        back_populates="camara",
+        cascade="all, delete-orphan"
+    )

@@ -34,9 +34,6 @@ class CamaraInDB(CamaraBase):
 
 # Schema principal para ser retornado pela API
 class Camara(CamaraInDB):
-    
-    # --- LÓGICA DE FORMATAÇÃO COM CAMPOS COMPUTADOS ---
-    
     @computed_field
     @property
     def dt_cadastro_formatada(self) -> str:
@@ -56,3 +53,11 @@ class Camara(CamaraInDB):
 class PaginatedCamaraResponse(BaseModel):
     items: List[Camara]
     total: int
+
+class CamaraSimple(BaseModel):
+    """Schema simplificado para retornar dados básicos da Câmara."""
+    id: int
+    nome: str
+
+    class Config:
+        from_attributes = True

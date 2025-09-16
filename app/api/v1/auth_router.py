@@ -27,10 +27,22 @@ def login_for_access_token(
         )
     
     access_token = create_access_token(data={"sub": usuario.email})
+
+    camaras_acesso = None
+    # Se o utilizador NÃO for um super admin, busca as suas câmaras associadas
+    if not usuario.is_superuser:
+        camaras_acesso = [assoc.camara for assoc in usuario.associacoes if assoc.ativo]
+
+        if not camaras_acesso:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, # 403 Forbidden é o código correto para este caso
+                detail="Acesso negado. Você não está associado a nenhuma câmara ativa.",
+            )
     
     
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "usuario": usuario 
+        "usuario": usuario,
+        "camaras": camaras_acesso
     }
