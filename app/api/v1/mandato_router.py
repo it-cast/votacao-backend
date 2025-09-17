@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 # 1. Importações dos schemas de Mandato
-from app.schemas.mandato_schema import MandatoPublic, MandatoCreate, MandatoUpdate, PaginatedMandatoResponse
+from app.schemas.mandato_schema import MandatoPublic, MandatoCreate, MandatoUpdate, PaginatedMandatoResponse, MensagemResposta
+
 
 # 2. Importação do serviço de Mandato
 from app.services.mandato_service import MandatoService
@@ -77,7 +78,7 @@ def update_mandato(
     service = MandatoService(db)
     return service.update_mandato(id=id, mandato_in=mandato_in)
 
-@router.delete("/{id}", response_model=MandatoPublic)
+@router.delete("/{id}", response_model=MensagemResposta)
 def delete_mandato(
     *,
     db: Session = Depends(get_db),
@@ -88,4 +89,7 @@ def delete_mandato(
     Deleta um mandato. Requer autenticação.
     """
     service = MandatoService(db)
-    return service.delete_mandato(id=id)
+    service.delete_mandato(id=id) 
+
+    # Retorna uma mensagem de sucesso que corresponde ao schema MensagemResposta
+    return {"detalhe": "Mandato deletado com sucesso."}

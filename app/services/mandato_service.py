@@ -77,4 +77,4 @@ class MandatoService:
         
         deleted_mandato = self.repository.remove(self.db, id=mandato.id)
         
-        return deleted_mandato
+        return deleted_mandato is not None

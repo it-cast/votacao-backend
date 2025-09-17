@@ -59,3 +59,6 @@ class MandatoPublic(MandatoBase):
 class PaginatedMandatoResponse(BaseModel):
     items: List[MandatoPublic]
     total: int
+    
+class MensagemResposta(BaseModel):
+    detalhe: str
