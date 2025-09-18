@@ -1,5 +1,5 @@
 # votacao-backend/app/models/mandato_model.py
-from sqlalchemy import Column, Integer, String, Date, TIMESTAMP, func, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, TIMESTAMP, func, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 
@@ -13,6 +13,7 @@ class Mandato(Base):
     descricao = Column(String(120), nullable=False)
     data_inicio = Column(Date, nullable=False)
     data_fim = Column(Date, nullable=False)
+    ativo = Column(Boolean, default=True)
     
     dt_cadastro = Column(TIMESTAMP, server_default=func.now())
     dt_atualizado = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

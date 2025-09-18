@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, computed_field
-from typing import Optional, List
+from pydantic import BaseModel, Field, computed_field, field_validator
+from typing import Optional, List, Any
 from datetime import date, datetime
 
 # Importa o schema da Câmara para o relacionamento
@@ -8,6 +8,7 @@ from app.schemas.camara_schema import CamaraSimple
 # Propriedades base compartilhadas
 class MandatoBase(BaseModel):
     descricao: str = Field(..., max_length=120)
+    ativo: bool 
     data_inicio: date
     data_fim: date
     camara_id: int
@@ -21,6 +22,7 @@ class MandatoUpdate(BaseModel):
     descricao: Optional[str] = Field(None, max_length=120)
     data_inicio: Optional[date] = None
     data_fim: Optional[date] = None
+    ativo: Optional[bool] = None
     # camara_id geralmente não é alterado, mas pode ser incluído se necessário
     # camara_id: Optional[int] = None
 
@@ -29,6 +31,15 @@ class MandatoPublic(MandatoBase):
     id: int
     dt_cadastro: datetime
     dt_atualizado: Optional[datetime] = None
+
+    ativo: int
+
+    @field_validator('ativo', mode='before')
+    @classmethod
+    def bool_to_int(cls, v: Any) -> int:
+        if isinstance(v, bool):
+            return int(v)
+        return v
     
     # Aninha os dados da câmara relacionada para um retorno mais completo
     camara: CamaraSimple

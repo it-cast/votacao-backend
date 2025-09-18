@@ -74,5 +74,23 @@ class MandatoRepository:
         db.commit()
         return db_obj
 
+    def deactivate_all_active_by_camara(self, db: Session, *, camara_id: int, exclude_id: Optional[int] = None):
+        """
+        Desativa todos os mandatos ativos de uma câmara, opcionalmente excluindo um ID.
+        """
+        query = db.query(Mandato).filter(Mandato.camara_id == camara_id, Mandato.ativo == True)
+        
+        if exclude_id:
+            query = query.filter(Mandato.id != exclude_id)
+            
+        mandatos_to_deactivate = query.all()
+        
+        for mandato in mandatos_to_deactivate:
+            mandato.ativo = False
+            db.add(mandato)
+        
+        db.commit()
+
+
 # Instância única do repositório para ser usada em toda a aplicação
 mandato_repository = MandatoRepository()

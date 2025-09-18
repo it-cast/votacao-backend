@@ -17,7 +17,7 @@ class UsuarioRepository:
     
     
     def get_all(self, skip: int = 0, limit: int = 100, filtro: Optional[str] = None) -> list[Usuario]:
-        query = self.db.query(Usuario)
+        query = self.db.query(Usuario).filter(Usuario.is_superuser == True)
 
         if filtro:
             query = query.filter(
@@ -64,7 +64,8 @@ class UsuarioRepository:
 
 
     def count(self, filtro: Optional[str] = None) -> int:
-        query = self.db.query(Usuario)
+        query = self.db.query(Usuario).filter(Usuario.is_superuser == True)
+
         if filtro:
             query = query.filter(
                 or_(

@@ -57,6 +57,10 @@ class MandatoService:
                 detail=f"Câmara com ID {mandato_in.camara_id} não encontrada."
             )
         
+        # Se o novo mandato for ativo, desativa todos os outros da mesma câmara
+        if mandato_in.ativo:
+            self.repository.deactivate_all_active_by_camara(self.db, camara_id=mandato_in.camara_id)
+        
         return self.repository.create(self.db, obj_in=mandato_in)
 
     def update_mandato(self, id: int, mandato_in: MandatoUpdate):
@@ -66,6 +70,11 @@ class MandatoService:
         # Primeiro, busca o mandato para garantir que ele existe
         db_mandato = self.get_mandato(id=id)
         
+        # Se o mandato estiver sendo ativado, desativa todos os outros da mesma câmara
+        # O 'is True' é importante para garantir que a condição só seja atendida se o valor for explicitamente True
+        if mandato_in.ativo is True:
+            self.repository.deactivate_all_active_by_camara(self.db, camara_id=db_mandato.camara_id, exclude_id=id)
+
         return self.repository.update(self.db, db_obj=db_mandato, obj_in=mandato_in)
     
     def delete_mandato(self, id: int):
