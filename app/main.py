@@ -1,14 +1,18 @@
-# app/main.py
 from fastapi import FastAPI
-# 1. Importe o CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.base import Base
 from app.db.database import engine
-from app.api.v1 import auth_router, camara_router, usuario_router, camara_usuario_router, mandato_router, vereador_router, mandato_vereador_router
-
-
-
+from app.api.v1 import (
+    auth_router, 
+    camara_router, 
+    usuario_router, 
+    camara_usuario_router, 
+    mandato_router, 
+    vereador_router, 
+    mandato_vereador_router,
+    comissao_router
+)
 
 # Esta linha cria as tabelas no seu banco de dados se elas não existirem
 # Base.metadata.create_all(bind=engine)
@@ -19,14 +23,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 2. Defina as origens permitidas (de onde seu front-end fará as requisições)
+# Defina as origens permitidas (de onde seu front-end fará as requisições)
 origins = [
     "http://localhost",
     "http://localhost:4200", # Endereço padrão do Angular em desenvolvimento
     "http://localhost:8080",
 ]
 
-# 3. Adicione o middleware de CORS à sua aplicação
+# Adicione o middleware de CORS à sua aplicação
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # Lista de origens que podem fazer requisições
@@ -44,3 +48,4 @@ app.include_router(camara_usuario_router.router, prefix="/api/v1")
 app.include_router(mandato_router.router, prefix="/api/v1")
 app.include_router(vereador_router.router, prefix="/api/v1")
 app.include_router(mandato_vereador_router.router, prefix="/api/v1")
+app.include_router(comissao_router.router, prefix="/api/v1")
