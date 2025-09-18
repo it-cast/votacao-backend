@@ -23,3 +23,5 @@ class Mandato(Base):
     # Relacionamento de volta para a Câmara
     # Permite acessar o objeto 'camara' a partir de um objeto 'mandato'
     camara = relationship("Camara", back_populates="mandatos")
+
+    associacoes = relationship("MandatoVereador", back_populates="mandato", cascade="all, delete-orphan")

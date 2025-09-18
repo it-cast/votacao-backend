@@ -5,7 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.base import Base
 from app.db.database import engine
-from app.api.v1 import auth_router, camara_router, usuario_router, camara_usuario_router, mandato_router
+from app.api.v1 import auth_router, camara_router, usuario_router, camara_usuario_router, mandato_router, vereador_router, mandato_vereador_router
+
+
 
 
 # Esta linha cria as tabelas no seu banco de dados se elas não existirem
@@ -40,3 +42,5 @@ app.include_router(usuario_router.router, prefix="/api/v1")
 app.include_router(camara_router.router, prefix="/api/v1")
 app.include_router(camara_usuario_router.router, prefix="/api/v1")
 app.include_router(mandato_router.router, prefix="/api/v1")
+app.include_router(vereador_router.router, prefix="/api/v1")
+app.include_router(mandato_vereador_router.router, prefix="/api/v1")
