@@ -1,6 +1,7 @@
 # app/repositories/mandato_vereador_repository.py
 from sqlalchemy.orm import Session
 from app.models.vereador_model import Vereador
+from app.models.mandato_model import Mandato
 from app.models.mandato_vereador_model import MandatoVereador
 from app.schemas.mandato_vereador_schema import MandatoVereadorBase, MandatoVereadorUpdate
 from typing import List, Optional
@@ -35,6 +36,32 @@ class MandatoVereadorRepository:
             )
 
         return query.offset(skip).limit(limit).all()
+    
+    
+    def get_all(
+        self, 
+        db: Session, 
+        *,
+        camara_id: Optional[int] = None,
+        mandato_ativo: Optional[bool] = None
+    ) -> List[MandatoVereador]:
+        """
+        Busca genérica de associações com filtros opcionais.
+        """
+        query = db.query(MandatoVereador)
+        
+        # Se filtros relacionados ao mandato forem fornecidos, faz o JOIN
+        if camara_id is not None or mandato_ativo is not None:
+            query = query.join(Mandato) # Junta MandatoVereador com Mandato
+            
+            if camara_id is not None:
+                query = query.filter(Mandato.camara_id == camara_id)
+            
+            if mandato_ativo is not None:
+                query = query.filter(Mandato.ativo == mandato_ativo)
+
+        return query.all()
+    
 
     def create(self, obj_in: MandatoVereadorBase) -> MandatoVereador:
         """Cria uma nova associação no banco de dados."""

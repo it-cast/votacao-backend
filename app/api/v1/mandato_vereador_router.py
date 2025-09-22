@@ -31,6 +31,25 @@ def create_association(
     service = MandatoVereadorService(db)
     return service.create_association(association_in=association_in)
 
+@router.get("/", response_model=List[MandatoVereadorPublic])
+def read_all_associations(
+    *,
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    camara_id: Optional[int] = None,
+    mandato_ativo: Optional[bool] = None,
+    current_user: Usuario = Depends(get_current_user)
+):
+    """
+    Lista associações mandato-vereador com filtros opcionais.
+    - `camara_id`: Filtra por câmara.
+    - `mandato_ativo`: Filtra por mandatos ativos (true) ou inativos (false).
+    """
+    service = MandatoVereadorService(db)
+    associacoes = service.get_all_associations(camara_id=camara_id, mandato_ativo=mandato_ativo)
+    return associacoes
+
 @router.get("/mandato/{mandato_id}", response_model=PaginatedMandatoVereadorResponse)
 def read_associations_by_mandato(
     *,

@@ -39,6 +39,12 @@ class MandatoVereadorService:
 
     def get_total_associations_by_mandato(self, mandato_id: int, filtro: Optional[str] = None) -> int:
         return self.repository.count_by_mandato_id(mandato_id=mandato_id, filtro=filtro)
+    
+    def get_all_associations(self, camara_id: Optional[int] = None, mandato_ativo: Optional[bool] = None):
+        """
+        Busca e retorna associações com base em filtros genéricos.
+        """
+        return self.repository.get_all(self.db, camara_id=camara_id, mandato_ativo=mandato_ativo)
 
     def create_association(self, association_in: MandatoVereadorCreate):
         vereador_data = association_in.vereador

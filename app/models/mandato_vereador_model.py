@@ -20,4 +20,6 @@ class MandatoVereador(Base):
     # Relacionamentos (permite acessar os objetos completos)
     mandato = relationship("Mandato", back_populates="associacoes")
     vereador = relationship("Vereador", back_populates="associacoes")
+
+    associacoes = relationship("ComissaoMembro", back_populates="mandato_vereador", cascade="all, delete-orphan")
     

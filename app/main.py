@@ -11,7 +11,8 @@ from app.api.v1 import (
     mandato_router, 
     vereador_router, 
     mandato_vereador_router,
-    comissao_router
+    comissao_router,
+    comissao_membro_router  
 )
 
 # Esta linha cria as tabelas no seu banco de dados se elas não existirem
@@ -49,3 +50,4 @@ app.include_router(mandato_router.router, prefix="/api/v1")
 app.include_router(vereador_router.router, prefix="/api/v1")
 app.include_router(mandato_vereador_router.router, prefix="/api/v1")
 app.include_router(comissao_router.router, prefix="/api/v1")
+app.include_router(comissao_membro_router.router, prefix="/api/v1")

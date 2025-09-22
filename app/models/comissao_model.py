@@ -21,3 +21,5 @@ class Comissao(Base):
 
     # Relacionamento de volta para a Câmara
     camara = relationship("Camara")
+
+    associacoes = relationship("ComissaoMembro", back_populates="comissao", cascade="all, delete-orphan")
