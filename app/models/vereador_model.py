@@ -24,3 +24,4 @@ class Vereador(Base):
     dt_atualizado = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     associacoes = relationship("MandatoVereador", back_populates="vereador", cascade="all, delete-orphan")
+    camaraUsuarios = relationship("CamaraUsuario", back_populates="vereador", cascade="all, delete-orphan")

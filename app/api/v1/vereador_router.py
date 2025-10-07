@@ -24,6 +24,24 @@ def create_vereador(
     return service.create_vereador(vereador_create=vereador)
 
 
+@router.get("/", response_model=PaginatedVereadorResponse)
+def read_vereadores(
+    *,
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    filtro: Optional[str] = None,
+    current_user: Usuario = Depends(get_current_user)
+):
+    """
+    Retorna uma lista de vereadores.
+    """
+    service = VereadorService(db)
+    vereadores = service.get_all_vereadores(skip=skip, limit=limit, filtro=filtro)
+    total = service.get_total_vereadores(filtro=filtro)
+    return {"items": vereadores, "total": total}
+
+
 @router.get("/{id}", response_model=VereadorPublic)
 def read_vereador_by_id(
     *,

@@ -47,7 +47,7 @@ class VereadorSimple(VereadorBase):
 # Schema para retornar dados públicos de um usuário (sem a senha)
 class VereadorPublic(VereadorBase):
     id: int
-    ativo: bool
+    ativo: int 
     dt_cadastro: datetime
     dt_atualizado: Optional[datetime] = None
 

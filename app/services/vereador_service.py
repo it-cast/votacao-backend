@@ -9,6 +9,12 @@ class VereadorService:
     def __init__(self, db: Session):
         self.repository = VereadorRepository(db)
     
+    def get_all_vereadores(self, skip: int = 0, limit: int = 100, filtro: Optional[str] = None):
+        return self.repository.get_all(skip=skip, limit=limit, filtro=filtro)
+    
+    def get_total_vereadores(self, filtro: Optional[str] = None):
+        return self.repository.count(filtro=filtro)
+    
     def create_vereador(self, vereador_create: VereadorCreate):
         existing_vereador = self.repository.get_by_email(vereador_create.email)
         existing_vereador_cpf = self.repository.get_by_cpf(vereador_create.cpf)
@@ -21,8 +27,8 @@ class VereadorService:
         
         return self.repository.create(vereador_create)
     
-    def update_vereador(self, vereador_id: int, vereador_update: VereadorUpdate):
-        db_vereador = self.get_vereador_by_id(vereador_id)
+    def update_vereador(self, id: int, vereador_update: VereadorUpdate):
+        db_vereador = self.get_vereador_by_id(id)
         if not db_vereador:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -31,8 +37,8 @@ class VereadorService:
         
         return self.repository.update(db_obj=db_vereador, obj_in=vereador_update)
     
-    def get_vereador_by_id(self, vereador_id: int):
-        vereador = self.repository.get_by_id(id=vereador_id)
+    def get_vereador_by_id(self, id: int):
+        vereador = self.repository.get_by_id(id=id)
         if not vereador:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vereador não encontrado")
         return vereador

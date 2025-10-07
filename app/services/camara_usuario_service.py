@@ -87,6 +87,7 @@ class CamaraUsuarioService:
         create_data_dict = {
             "usuario_id": usuario_id,
             "camara_id": association_in.camara_id,
+            "vereador_id": association_in.vereador_id,
             "papel": association_in.papel,
             "permissao": permissao_str
         }
@@ -115,7 +116,8 @@ class CamaraUsuarioService:
         # Prepara os outros campos da associação para o update
         update_data_schema = CamaraUsuarioUpdate(
             papel=association_in.papel,
-            ativo=association_in.ativo
+            ativo=association_in.ativo,
+            vereador_id=association_in.vereador_id
         )
         
         return self.repository.update(self.db, db_obj=db_association, obj_in=update_data_schema)

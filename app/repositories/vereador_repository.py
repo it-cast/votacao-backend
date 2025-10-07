@@ -1,12 +1,34 @@
 from sqlalchemy.orm import Session
 from app.models.vereador_model import Vereador
-from app.schemas.vereador_schema import VereadorCreate, VereadorUpdate
+from app.schemas.vereador_schema import VereadorCreate, VereadorUpdate, PaginatedVereadorResponse
 from typing import List, Optional
 from sqlalchemy import or_
 
 class VereadorRepository:
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self, skip: int = 0, limit: int = 100, filtro: Optional[str] = None) -> PaginatedVereadorResponse:
+        query = self.db.query(Vereador)
+        if filtro:
+            query = query.filter(
+                or_(
+                    Vereador.nome.ilike(f"%{filtro}%"),
+                    Vereador.email.ilike(f"%{filtro}%")
+                )
+            )
+        return query.offset(skip).limit(limit).all()
+    
+    def count(self, filtro: Optional[str] = None) -> int:
+        query = self.db.query(Vereador)
+        if filtro:
+            query = query.filter(
+                or_(
+                    Vereador.nome.ilike(f"%{filtro}%"),
+                    Vereador.email.ilike(f"%{filtro}%")
+                )
+            )
+        return query.count()
 
     def get_by_email(self, email: str) -> Vereador | None:
         return self.db.query(Vereador).filter(Vereador.email == email).first()
